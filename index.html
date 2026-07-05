@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parth Ahuja — Portfolios Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --monitor-bg: #050a06;
+      --monitor-green: #3CFF8E;
+      --monitor-green-dim: #10331b;
+      --mario-sky: #5c94fc;
+      --mario-dirt: #d82800;
+      --arcade-gold: #ffd700;
+      --arcade-border: #b38600;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: sans-serif;
+    }
+
+    .container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* --- COMMON PANEL STYLE --- */
+    .panel {
+      position: relative;
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: flex-grow 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* --- CRT OVERLAY --- */
+    .crt-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.65) 100%);
+    }
+    .crt-overlay::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+      z-index: 11;
+    }
+
+    /* --- LEFT SIDE: CLINICAL MONITOR --- */
+    .panel.medical {
+      background: var(--monitor-bg);
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--monitor-green);
+      border-right: 2px solid var(--monitor-green-dim);
+      overflow: visible;
+    }
+
+    .panel-inner {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Grid pattern for ECG monitor */
+    .medical-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(60, 255, 142, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60, 255, 142, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    /* Live ECG Heartbeat Line */
+    .ecg-wrapper {
+      position: absolute;
+      width: 200%;
+      height: 140px;
+      display: flex;
+      left: 0;
+      bottom: 22%;
+      pointer-events: none;
+      animation: scroll-ecg 4.5s linear infinite;
+      transition: animation-duration 0.6s ease;
+    }
+
+    .ecg-svg {
+      width: 50%;
+      height: 100%;
+    }
+
+    .ecg-path {
+      fill: none;
+      stroke: var(--monitor-green);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 6px var(--monitor-green));
+    }
+
+    @keyframes scroll-ecg {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Hospital interface elements */
+    .medical-ui {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      font-size: 11px;
+      line-height: 1.8;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .heart-pulse {
+      display: inline-block;
+      color: #ff3b30;
+      animation: beat 0.8s infinite alternate;
+      margin-left: 5px;
+    }
+
+    @keyframes beat {
+      to { transform: scale(1.25); filter: drop-shadow(0 0 4px #ff3b30); }
+    }
+
+    .medical-title {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      z-index: 2;
+      text-shadow: 0 0 8px rgba(60, 255, 142, 0.5);
+      transition: transform 0.4s ease;
+    }
+
+    .medical-desc {
+      font-size: 13px;
+      color: var(--monitor-green);
+      opacity: 0.8;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+      z-index: 2;
+      letter-spacing: 0.1em;
+    }
+
+    .btn-medical {
+      background: transparent;
+      border: 1px solid var(--monitor-green);
+      color: var(--monitor-green);
+      font-family: 'IBM Plex Mono', monospace;
+      padding: 12px 28px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      z-index: 5;
+      letter-spacing: 0.15em;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(60, 255, 142, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .btn-medical:hover {
+      background: var(--monitor-green);
+      color: var(--monitor-bg);
+      box-shadow: 0 0 20px var(--monitor-green);
+      font-weight: 700;
+    }
+
+    /* --- RIGHT SIDE: RETRO NES MARIO --- */
+    .panel.arcade {
+      background: var(--mario-sky);
+      font-family: 'Press Start 2P', monospace;
+      color: #000;
+      border-left: 2px solid #000;
+    }
+
+    /* Classic Ground (Base64 NES Dirt Tile Pattern) */
+    .mario-ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 48px;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiNkODI4MDAiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTYiIGhlaWdodD0iMiIgZmlsbD0iI2ZjOWM1YyIvPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyIiBoZWlnaHQ9IjE2IiBmaWxsPSIjZmM5YzVjIi8+PHJlY3QgeD0iMTQiIHk9IjIiIHdpZHRoPSIyIiBoZWlnaHQ9IjE0IiBmaWxsPSIjMDAwIi8+PHJlY3QgeD0iMiIgeT0iMTQiIHdpZHRoPSIxMiIgaGVpZ2h0PSIyIiBmaWxsPSIjMDAwIi8+PHJlY3QgeD0iNCIgeT0iNCIgdmlldGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzk0MDAwMCIvPjxyZWN0IHg9IjEwIiB5PSI4IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjOTQwMDAwIi8+PC9zdmc+');
+      background-size: 32px 32px;
+      border-top: 4px solid #000;
+      z-index: 3;
+    }
+
+    /* Floating Drifting Clouds */
+    .cloud-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .pixel-cloud {
+      position: absolute;
+      fill: #fff;
+      image-rendering: pixelated;
+      animation: drift 32s linear infinite;
+    }
+
+    .cloud-1 {
+      top: 15%;
+      width: 90px;
+      animation-duration: 26s;
+    }
+
+    .cloud-2 {
+      top: 32%;
+      width: 70px;
+      animation-duration: 38s;
+      animation-delay: -12s;
+    }
+
+    @keyframes drift {
+      from { transform: translateX(110vw); }
+      to { transform: translateX(-150px); }
+    }
+
+    /* Bouncing Warp Pipe */
+    .warp-pipe {
+      position: absolute;
+      bottom: 44px;
+      right: 40px;
+      z-index: 2;
+      image-rendering: pixelated;
+    }
+
+    /* Floating question and brick blocks */
+    .mario-blocks {
+      position: absolute;
+      bottom: 170px;
+      right: 60px;
+      display: flex;
+      gap: 0;
+      z-index: 2;
+    }
+
+    .mario-block {
+      width: 32px;
+      height: 32px;
+      position: relative;
+      image-rendering: pixelated;
+      box-shadow: inset -3px -3px 0 #000, inset 3px 3px 0 #fff;
+    }
+
+    .brick-block {
+      background: #c84c0c;
+      border: 3px solid #000;
+      background-image: 
+        linear-gradient(#000 2px, transparent 2px),
+        linear-gradient(90deg, #000 2px, transparent 2px);
+      background-size: 16px 16px;
+      box-shadow: none;
+    }
+
+    .q-block {
+      background: #fc9c5c;
+      border: 3px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #000;
+      box-shadow: none;
+      animation: q-flash 0.8s infinite step-start;
+    }
+
+    @keyframes q-flash {
+      0%, 100% { background: #fc9c5c; color: #000; }
+      50% { background: #944400; color: #fc9c5c; }
+    }
+
+    /* Interactive Popping Gold Coins */
+    .pop-coin {
+      position: absolute;
+      width: 14px;
+      height: 20px;
+      background: var(--arcade-gold);
+      border: 2px solid #000;
+      border-radius: 4px;
+      top: -24px;
+      left: 6px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Hover trigger coin pop animation */
+    .panel.arcade:hover .pop-coin {
+      animation: coin-pop-animation 1.2s infinite ease-out;
+    }
+
+    @keyframes coin-pop-animation {
+      0% { transform: translateY(0) scale(0.8); opacity: 0; }
+      15% { opacity: 1; }
+      80% { transform: translateY(-70px) scale(1); opacity: 1; }
+      100% { transform: translateY(-90px) scale(0.4); opacity: 0; }
+    }
+
+    .arcade-title {
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      color: #000;
+      z-index: 4;
+      text-shadow: 2px 2px 0 #fff;
+      text-align: center;
+      line-height: 1.5;
+      transition: transform 0.4s ease;
+    }
+
+    .arcade-desc {
+      font-size: 9px;
+      color: #000;
+      opacity: 0.85;
+      margin-bottom: 35px;
+      z-index: 4;
+      letter-spacing: 0.05em;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .btn-arcade {
+      background: var(--arcade-gold);
+      border: 3px solid #000;
+      color: #000;
+      font-family: 'Press Start 2P', monospace;
+      padding: 14px 24px;
+      font-size: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      z-index: 5;
+      box-shadow: 3px 3px 0 #000;
+      transition: all 0.2s ease;
+      animation: press-start-blink 1.2s infinite;
+    }
+
+    .btn-arcade:hover {
+      background: #fff;
+      box-shadow: 5px 5px 0 #000;
+      transform: scale(1.05);
+      animation: none;
+    }
+
+    @keyframes press-start-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.65; }
+    }
+
+    /* --- CENTER SPLIT BADGE --- */
+    .center-badge {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translate(50%, -50%);
+      width: 140px;
+      height: 140px;
+      background: #000;
+      border: 3px double #ffd700;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
+      pointer-events: none;
+      box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 15px rgba(255,215,0,0.15);
+      text-align: center;
+    }
+
+    .center-name {
+      font-family: 'IBM Plex Mono', monospace;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    .center-divider {
+      width: 40px;
+      height: 1px;
+      background: #ffd700;
+      margin: 4px 0;
+    }
+
+    .center-sub {
+      font-family: 'Press Start 2P', sans-serif;
+      font-size: 6px;
+      color: #888;
+      letter-spacing: 0.05em;
+      line-height: 1.4;
+    }
+
+    /* --- HOVER BEHAVIORS --- */
+    .panel:hover {
+      flex-grow: 1.6;
+    }
+
+    /* Speed up animations on hover */
+    .panel.medical:hover .ecg-wrapper {
+      animation-duration: 2.5s;
+    }
+    .panel.medical:hover .medical-title {
+      transform: scale(1.05);
+    }
+
+    .panel.arcade:hover .arcade-title {
+      transform: scale(1.05);
+    }
+
+    /* --- MOBILE STYLING --- */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .panel {
+        width: 100%;
+        height: 50%;
+        border-right: none;
+      }
+      .panel.medical {
+        border-bottom: 2px solid var(--monitor-green-dim);
+      }
+      .center-badge {
+        width: 110px;
+        height: 110px;
+        left: 50% !important;
+        top: auto !important;
+        bottom: 0 !important;
+        right: auto !important;
+        transform: translate(-50%, 50%) !important;
+      }
+      .medical-title {
+        font-size: 24px;
+      }
+      .arcade-title {
+        font-size: 15px;
+      }
+      .btn-arcade {
+        padding: 10px 16px;
+        font-size: 8px;
+      }
+      .btn-medical {
+        padding: 10px 20px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="crt-overlay"></div>
+
+    <!-- LEFT PANEL: MEDICAL CLINICAL DOSSIER -->
+    <div class="panel medical" id="panel-medical" onclick="navigateTo('casefile')">
+      <div class="panel-inner">
+        <div class="medical-grid"></div>
+        
+        <div class="ecg-wrapper" id="ecg-wrapper">
+          <!-- SVG Heartbeat wave 1 -->
+          <svg class="ecg-svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path class="ecg-path" d="M 0 50 L 120 50 L 140 50 L 150 20 L 160 80 L 170 45 L 180 55 L 195 50 L 350 50 L 500 50 L 520 50 L 530 20 L 540 80 L 550 45 L 560 55 L 575 50 L 720 50 L 850 50 L 870 50 L 880 20 L 890 80 L 900 45 L 910 55 L 925 50 L 1000 50" />
+          </svg>
+          <!-- SVG Heartbeat wave 2 -->
+          <svg class="ecg-svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+            <path class="ecg-path" d="M 0 50 L 120 50 L 140 50 L 150 20 L 160 80 L 170 45 L 180 55 L 195 50 L 350 50 L 500 50 L 520 50 L 530 20 L 540 80 L 550 45 L 560 55 L 575 50 L 720 50 L 850 50 L 870 50 L 880 20 L 890 80 L 900 45 L 910 55 L 925 50 L 1000 50" />
+          </svg>
+        </div>
+      </div>
+      
+      <div class="medical-ui">
+        DOSSIER CODE: #PA-2024-CSE<br>
+        STATUS: MONITORED<br>
+        SYSTEM STATUS: ONLINE<br>
+        PULSE: 72 BPM <span class="heart-pulse">♥</span>
+      </div>
+
+      <h1 class="medical-title">Clinical Dossier</h1>
+      <p class="medical-desc">Healthcare Stats & Analytics</p>
+      
+      <a href="casefile/" class="btn-medical" id="btn-med" onmouseenter="playHoverSound('medical')">Access File</a>
+
+      <!-- FLOATING CENTER DIVIDER BADGE -->
+      <div class="center-badge" id="center-badge">
+        <div class="center-name">PARTH AHUJA</div>
+        <div class="center-divider"></div>
+        <div class="center-sub">SELECT<br>PORTFOLIO</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: RETRO ARCADE -->
+    <div class="panel arcade" id="panel-arcade" onclick="navigateTo('mario')">
+      <!-- Ground blocks -->
+      <div class="mario-ground"></div>
+
+      <!-- Clouds -->
+      <div class="cloud-container">
+        <!-- Cloud 1 -->
+        <svg class="pixel-cloud cloud-1" viewBox="0 0 16 8">
+          <path d="M 3 1 h 10 v 6 h -10 z M 5 0 h 6 v 8 h -6 z M 2 2 h 12 v 4 h -12 z M 1 3 h 14 v 2 h -14 z" />
+        </svg>
+        <!-- Cloud 2 -->
+        <svg class="pixel-cloud cloud-2" viewBox="0 0 16 8">
+          <path d="M 3 1 h 10 v 6 h -10 z M 5 0 h 6 v 8 h -6 z M 2 2 h 12 v 4 h -12 z M 1 3 h 14 v 2 h -14 z" />
+        </svg>
+      </div>
+
+      <!-- Warp Pipe -->
+      <div class="warp-pipe">
+        <svg width="64" height="72" viewBox="0 0 32 36">
+          <rect x="0" y="0" width="32" height="12" fill="#00a800" stroke="#000" stroke-width="1.5"/>
+          <rect x="2" y="2" width="28" height="8" fill="#00f800"/>
+          <rect x="2" y="2" width="6" height="8" fill="#ffffff" opacity="0.65"/>
+          <rect x="22" y="2" width="8" height="8" fill="#005800"/>
+          <rect x="3" y="12" width="26" height="24" fill="#00a800" stroke="#000" stroke-width="1.5"/>
+          <rect x="5" y="12" width="22" height="24" fill="#00f800"/>
+          <rect x="5" y="12" width="5" height="24" fill="#ffffff" opacity="0.65"/>
+          <rect x="20" y="12" width="7" height="24" fill="#005800"/>
+        </svg>
+      </div>
+
+      <!-- Question and Brick Blocks -->
+      <div class="mario-blocks">
+        <div class="mario-block q-block">
+          ?
+          <div class="pop-coin"></div>
+        </div>
+        <div class="mario-block brick-block"></div>
+        <div class="mario-block q-block">
+          ?
+          <div class="pop-coin"></div>
+        </div>
+      </div>
+
+      <h1 class="arcade-title">Retro Game<br>Portfolio</h1>
+      <p class="arcade-desc">Interactive 8-Bit Experience</p>
+
+      <a href="mario/" class="btn-arcade" id="btn-arc" onmouseenter="playHoverSound('arcade')">Press Start</a>
+    </div>
+  </div>
+
+  <script>
+    // Navigation routing helper
+    function navigateTo(folder) {
+      window.location.href = folder + "/";
+    }
+
+    // Audio chime generation using Web Audio API
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playHoverSound(theme) {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (theme === 'medical') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+          gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.12);
+        } else {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08);
+          gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.22);
+        }
+      } catch(e) {
+        console.warn('Audio Context failed to initialize:', e);
+      }
+    }
+  </script>
+</body>
+</html>
