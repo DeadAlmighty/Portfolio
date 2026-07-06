@@ -88,8 +88,21 @@ body {
   #mobile-controls {
     display: flex;
   }
+  #portal-btn {
+    top: 14px;
+    bottom: auto;
+    left: 16px;
+  }
+  #music-btn {
+    top: 14px;
+    bottom: auto;
+    right: 16px;
+  }
   #controls-hint {
-    display: none;
+    top: 14px;
+    bottom: auto;
+    font-size: 6px;
+    padding: 8px 12px;
   }
 }
 .dpad-left, .dpad-right {
@@ -146,6 +159,13 @@ body {
 <script>
 window.mobileControls = { left: false, right: false, down: false, jump: false };
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.innerWidth <= 1024) {
+    const hint = document.getElementById('controls-hint');
+    if (hint) {
+      hint.innerHTML = '◀ ▶ MOVE &nbsp;|&nbsp; A JUMP &nbsp;|&nbsp; ▼ ENTER PIPE &nbsp;|&nbsp; 🍄 MUSHROOM = GROW!';
+    }
+  }
+
   const setupMobileButton = (id, key) => {
     const btn = document.getElementById(id);
     if (btn) {
